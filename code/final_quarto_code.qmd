@@ -4,6 +4,7 @@ author: "Sofia Perez"
 date: "2026-03-16"
 format: html
 editor: visual
+toc: true # use this to display a table of contents
 ---
 
 github link:https://github.com/sofiaperez422/ENVS_193DS_winter-2026_final 
@@ -12,6 +13,31 @@ github link:https://github.com/sofiaperez422/ENVS_193DS_winter-2026_final
 
 ```{r}
 #| message: false
-library(tidyverse)
+library(tidyverse) # general use
+library(here) # file organization
+library(janitor) # cleaning data frames
+library(readxl) # reading excel files
 
+kelp <- read_csv(here("data",
+                      "Annual_Kelp_All_Years_20250903.csv")) # save annual-kelp data as kelp
+mopl <- read_csv(here("data",
+                      "MOPL_nest-site_selection_Duchardt_et_al._2019.csv")) # save MOPL-nest data as MOPL
+personal_data <- read_csv(here("data",
+                      "Personal_Data20260315.csv"))
 ```
+
+# Problem 1.
+
+## a.
+
+# Problem 2.
+
+## a.
+
+# Problem 3.
+
+## a.
+
+# Problem 4.
+
+## a.
