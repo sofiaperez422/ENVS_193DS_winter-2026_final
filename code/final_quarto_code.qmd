@@ -1,0 +1,17 @@
+---
+title: "final_code"
+author: "Sofia Perez"
+date: "2026-03-16"
+format: html
+editor: visual
+---
+
+github link:https://github.com/sofiaperez422/ENVS_193DS_winter-2026_final 
+
+## set up
+
+```{r}
+#| message: false
+library(tidyverse)
+
+```
