@@ -7,7 +7,7 @@ editor: visual
 toc: true # use this to display a table of contents
 ---
 
-github link:https://github.com/sofiaperez422/ENVS_193DS_winter-2026_final 
+github link:https://github.com/sofiaperez422/ENVS_193DS_winter-2026_final
 
 ## set up
 
@@ -29,6 +29,22 @@ personal_data <- read_csv(here("data",
 # Problem 1.
 
 ## a.
+
+In part 1, they used Linear Regression. In part 2, they used Kruskal-Wallis rank sum test.
+
+## b.
+
+To accompany part 2, they could make a box plot, where the x-axis would be water year classification and the y-axis would be the flooded wetland area (m^2^ ). The visual components would show the individual distributions of each water year classification with quartiles that reveal the medians, as well as outliers that may exist as single points.
+
+## c.
+
+Part 1 – The change in flooded wetland area is not predicted by precipitation (linear regression, F(degrees of freedom) = F statistic, R^2^ = coefficient of determination, p = 0.11, $\alpha$ = significance level).
+
+Part 2 – We found no difference ($\eta^2$ = effect size) in median flooded wetland area across water year classification (wet, above normal, below normal, dry, critical drought) (Kruskal-Wallis test, $\chi^2$(degrees of freedom) = H statistic, p = 0.12, $\alpha$ = significance level).
+
+## d.
+
+An additional variable that could influence the flooded area of a wetland is the daily Delta outflow, specifically applied as a median daily, which would be a continous variable. This might influence measured wetland flooding area because it directly involves the activity of water managers intentionally moving water on and off flooded wetland units for reasons like leaching salts from soils and providing wetland habitat for breeding waterfowl around that time of year, which has potential to influence the overall area.
 
 # Problem 2.
 
