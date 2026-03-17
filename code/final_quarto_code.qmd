@@ -50,6 +50,46 @@ An additional variable that could influence the flooded area of a wetland is the
 
 ## a.
 
+```{r}
+kelp_clean <- kelp |> # create new clean dataframe titled kelp_clean from kelp
+  
+# function 3
+clean_names() |>  # clean column names to lowercase and underscores
+
+  # function 1
+filter(!(date == "2000-09-22" & transect == "6" & quad == "40")) |>  # filter out observations from 2000-09-22 with transect 6 and quad 40
+
+# function 6
+filter(site %in% c("IVEE", "NAPL", "CARP")) |>  # filter to only include sites "IVEE" "NAPL" and "CARP"
+
+# function 8
+mutate(site_name = case_when( # rename sites to full site names
+  site == "NAPL" ~ "Naples",
+  site == "IVEE" ~ "Isla Vista",
+  site == "CARP" ~ "Carpinteria"
+)) |> 
+
+# function 2
+mutate(site_name = as_factor(site_name), # convert site name entries to factors
+       site_name = fct_relevel(site_name, # reorder sites using factor properties
+                               "Naples", "Isla Vista", "Carpinteria")) |> 
+
+# function 5
+group_by(site_name, year) |>  # group by site and year
+
+# function 7
+summarize(mean_fronds = mean(fronds)) |>  # calculate mean of fronds
+
+# function 4
+ungroup() # remove grouping
+```
+
+```{r}
+slice_sample(kelp_clean, # display 5 random rows from the sample
+             n = 5) |> 
+  str() # display the structure in a compact format
+```
+
 # Problem 3.
 
 ## a.
