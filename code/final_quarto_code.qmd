@@ -13,6 +13,7 @@ github link:https://github.com/sofiaperez422/ENVS_193DS_winter-2026_final
 
 ```{r}
 #| message: false
+#| warning: false
 library(tidyverse) # general use
 library(here) # file organization
 library(janitor) # cleaning data frames
@@ -21,6 +22,7 @@ library(showtext) # to show custom text font on plots
 library(MuMIn) # model selection
 library(DHARMa) # to check residual diagnostics
 library(ggeffects) # getting model predictions
+library(effectsize) # calculate effect size
 
 font_add_google(name = "Montserrat", # name of font on Google font website
               family = "mont") # name to call in font as
@@ -31,7 +33,9 @@ kelp <- read_csv(here("data",
 mopl <- read_csv(here("data",
                       "MOPL_nest-site_selection_Duchardt_et_al._2019.csv")) # save MOPL-nest data as object MOPL
 personal_data <- read_csv(here("data", 
-                      "Personal_Data20260315.csv")) # save personal data as object
+                      "Personal_Data20260315.csv")) |>  # save personal data as object
+  clean_names() |> # clean column names to lowercase and underscores
+  drop_na() # drop rows with NA value
 ```
 
 # Problem 1.
@@ -46,9 +50,9 @@ To accompany part 2, they could make a box plot, where the x-axis would be water
 
 ## c.
 
-Part 1 – The change in flooded wetland area is not predicted by precipitation (linear regression, F(degrees of freedom) = F statistic, R^2^ = coefficient of determination, p = 0.11, $\alpha$ = significance level).
+Part 1 – The change in flooded wetland area is not predicted by precipitation (linear regression, F(degrees of freedom) = F-statistic, R^2^ = coefficient of determination, p = 0.11, $\alpha$ = significance level).
 
-Part 2 – We found no difference ($\eta^2$ = effect size) in median flooded wetland area across water year classification (wet, above normal, below normal, dry, critical drought) (Kruskal-Wallis test, $\chi^2$(degrees of freedom) = H statistic, p = 0.12, $\alpha$ = significance level).
+Part 2 – We found no difference ($\eta^2$ = effect size) in median flooded wetland area across water year classification (wet, above normal, below normal, dry, critical drought) (Kruskal-Wallis test, $\chi^2$(degrees of freedom) = H-statistic, p = 0.12, $\alpha$ = significance level).
 
 ## d.
 
@@ -214,35 +218,36 @@ plot(simulateResiduals(model2)) # plot residuals using function from DHARMa for 
 mod_preds <- ggpredict(model2, # create object for model2 predictions
                        terms = "vo_nest [0:19 by = 1]") # generate predictions on specific interval
 
-ggplot(mopl_clean,
-       aes(x = vo_nest,
-           y = used_bin)) +
-  geom_point(size = 3,
-             alpha = 0.4,
-             color = "maroon4") +
-  geom_ribbon(data = mod_preds,
-              aes(x = x,
-                  y = predicted,
-                  ymin = conf.low,
-                  ymax = conf.high),
-              alpha = 0.3,
-              fill = "maroon4") +
-  geom_line(data = mod_preds,
-            aes(x = x,
-                y = predicted),
-            linewidth = 2,
-            color = "maroon4") +
-  theme_classic() +
-  scale_y_continuous(limits = c(0, 1),
+ggplot(mopl_clean, # create plot base with mopl_clean data
+       aes(x = vo_nest, # set x-axis
+           y = used_bin)) + # set y-axis
+  geom_point(size = 3, # plot observations and change point size
+             alpha = 0.4, # change transparency
+             color = "maroon4") + # change color
+  geom_ribbon(data = mod_preds, # plot prediction 95% CI using mod_preds object
+              aes(x = x, # use same x-axix
+                  y = predicted, # set y-axis as predicted values
+                  ymin = conf.low, # set bottom of region
+                  ymax = conf.high), # set top
+              alpha = 0.3, # adjust tranparency
+              fill = "maroon4") + # change color
+  geom_line(data = mod_preds, # plot model prediction as line using mod_preds object
+            aes(x = x, # use same x-axis
+                y = predicted), # set y-axis as predicted values
+            linewidth = 2, # change line width to thicker 
+            color = "maroon4") + # change color
+  theme_classic() + # change theme
+  theme(text = element_text(size = 30)) + # set font size
+  scale_y_continuous(limits = c(0, 1), # adjust y-axis parameters and breaks to only show 0 and 1
                      breaks = c(0, 1)) +
-  labs(x = "Visual obstruction",
-       y = "Probability of nest use",
-       title = "Predictions of visual obstruction impact on probability of Mountain Plover nest use")
+  labs(x = "Visual obstruction", # label x-axis
+       y = "Probability of nest use", # label y-axis
+       title = "Predictions of visual obstruction impact on probability of Mountain Plover nest use") # set title
 ```
 
 ## h.
 
-**Figure 3. Predictions of visual obstruction impact on probability of Mountain Plover nest use.** Points represent observations of visual obstruction at nest and non-nest sites. Semi-transparent ribbon strip represents 95% confidence interval. Line represents model predictions. Data originally from: Duchardt, Courtney; Beck, Jeffrey; Augustine, David (2020). Data from: Mountain Plover habitat selection and nest survival in relation to weather variability and spatial attributes of Black-tailed Prairie Dog disturbance \[Dataset\]. Dryad. https://doi.org/10.5061/dryad.ttdz08kt7
+**Figure 3. Predictions of visual obstruction impact on probability of Mountain Plover nest use.** Points represent observations of visual obstruction at nest and non-nest sites. Shaded region represents 95% confidence interval of model prediction. Line represents model predictions. Data originally from: Duchardt, Courtney; Beck, Jeffrey; Augustine, David (2020). Data from: Mountain Plover habitat selection and nest survival in relation to weather variability and spatial attributes of Black-tailed Prairie Dog disturbance \[Dataset\]. Dryad. https://doi.org/10.5061/dryad.ttdz08kt7
 
 ## i.
 
@@ -251,6 +256,73 @@ ggpredict(model2, # make prediction from object model2
           terms = "vo_nest [0]" ) # predict nest probabolity at visual obstruction 0
 ```
 
+## j. 
+
+Nest occupancy by Mountain Plovers is observed more often when the area has less visual obstruction by vegetation. From Figure 3, both observations and model predictions show that as visual obstruction increases, the probability of nest use by Mountain Plovers decreases. This is because shorter, denser layers of vegetation, or taller sparse pieces, that would make up minimal visual obstruction serve the purpose of providing some concealment to plovers while still allowing them to detect ground predators, making for ideal nest habitat. With no visual obstruction (0), the predicted probability of nest site occupancy is 0.73 (95% CI: \[0.65, 0.80\]). Further, it has been observed directly that vegetation height is higher outside of prairie dog colonies (Duchardt et al. 2019), so there would be more visual obstruction as distance from colonies increases, and thus probability of nest occupancy by plovers would decrease as distance from prairie dog colonies increases.
+
 # Problem 4.
 
 ## a.
+
+The visualizations are different in how I represented my data as the visualization from Homework 2 that involved whether or not I went to class that day was represented as a binomial variable, being "yes" or "no", and had two x-axis groupings of observations as vertical points, while my affective visualization represented it as a continuous variable, plotting the time i spent in lecture as the predictor with the response of game screen time.
+
+In terms of similarities, none of the plots show any strong trends or relationships between the predictor varaibles and the response of game screen time. It is hard to draw any firm conclusions from the visualizations alone, and further statistical analysis would be necessary.
+
+For my affective visualization, the observations higher on the y-axis are closer to the left, meaning that the largest extreme values of game screen time are when the predictor variable, time spent in lecture, is less. The scatterplot that I did in Homework 2 used a different predictor variable, time spent visiting friends, and though there are much fewer points, the highest observation is on the right side, meaning that the largest extreme of game screen time is when the predictor variable, time at friends', is greater. From this it could be loosley argued that the time I spent visiting friends' places has the opposite relationship as time in lecture would on the amount of time I spent on my mobile game. In contrast, the Homework 2 binomial visualization of class to game time showed that when I went to class, my game time was slightly higher, which is not consistent with my affective visualization in representing the relationship between the two variables of class and game screen time.
+
+The feedback I got in week 9 was that I should change my original represented variable of time spent visiting friends to the variable of time spent in lecture. The reason I was suggested this, which is also the reason that I chose to apply the advice, was because my main research question that I proposed was about if me going to class or not influenced the time that I spend with the game open on my phone. I kept the scatter plot and changed the y-axis to be time in lecture when representing the scatter plot points. Another suggestion I got was about incorporating more data predictor variables as differences in shapes or colors of the "fireflies" on my drawing. I also implemented this advice by color coding the points to relate to how many assignments I had due that observation date.
+
+## b.
+
+One analysis that I could apply to a research question of "Does having class influence the amount of time I spend on my mobile game?" is Wilcoxon rank-sum test to observe how game time may differ with having class. I am using a non-parametric test because my data likely has outliers that could shift the mean, and also my sample size is not very large. This analysis is appropriate to the question as it would work to compare the days that I did go to class to the days that I didn't, and see if there is a difference in the distributions of time spent on the game. I would be analyzing class as a binomial predictor variable, being "yes" class or "no" class, and the time with mobile game active as a continuous variable, which would test the null hypothesis that the ranks of game time for "yes" class are the same as the ranks of game time for "no" class.
+
+## c.
+
+### Check assumptions
+
+Observations from one group are independent from observations from the other –\> the observations on class days of game time have no influence on the observations made on non-class days of game time.
+
+### Run analysis
+
+```{r}
+#| label: Mann-Whitney U
+#| warning: false
+wilcox.test(time_with_mobile_game_active_min ~ class,
+            data = personal_data)
+```
+
+```{r}
+#| label: effect size
+cliffs_delta(time_with_mobile_game_active_min ~ class,
+            data = personal_data)
+```
+
+## d.
+
+```{r}
+#| label: personal data visualization
+ggplot(data = personal_data,
+       aes(x = class,
+           y = time_with_mobile_game_active_min)) +
+  geom_boxplot(aes(fill = class),
+               outliers = FALSE,
+               width = 0.5) +
+  geom_jitter(width = 0.2,
+              height = 0,
+              shape = 21) +
+  theme_minimal() +
+  labs(x = "Class", 
+       y = "Time with game active (min)") +
+  scale_fill_manual(values = c("no" = "bisque4",
+    "yes" = "turquoise3"
+  )) +
+  theme(legend.position = "none")
+```
+
+## e.
+
+\*\*Figure
+
+## f.
+
+## g.
