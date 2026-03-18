@@ -19,6 +19,8 @@ library(janitor) # cleaning data frames
 library(readxl) # reading excel files
 library(showtext) # to show custom text font on plots
 library(MuMIn) # model selection
+library(DHARMa) # to check residual diagnostics
+library(ggeffects) # getting model predictions
 
 font_add_google(name = "Montserrat", # name of font on Google font website
               family = "mont") # name to call in font as
@@ -136,14 +138,14 @@ The 1s and 0s represent the Mountain Plover nest use, 1 meaning presence of nest
 
 ## b.
 
-Visual obstruction is a continuous variable that is metric incorporating both vegetation height and density, which are values that are measured with metric units. As visual obstruction increases the probability of Mountain Plover nest site use would decrease, and this is due to activity of black-tailed prairie dog colonies clipping vegetation to maintain visibility for predators, which makes for ideal nesting habitat for the plover, meaning that if there exists more visual obstruction by vegetation, then it would not be as suitable for the plovers to nest (Introduction, paragraph 3).
+Visual obstruction is a continuous variable that is metric incorporating both vegetation height and density, which are measured components. As visual obstruction increases the probability of Mountain Plover nest site use would decrease, and this is due to activity of black-tailed prairie dog colonies clipping vegetation to maintain visibility for predators, which makes for ideal nesting habitat for the plover, meaning that if there exists more visual obstruction by vegetation, then it would not be as suitable for the plovers to nest (Introduction, paragraph 3).
 
 Distance to prairie dog colony edge is a continuous variable as it is a measurement value in metric units. As distance to prairie dog colony edge increases, the probability of Mountain Plover nest site use would decrease. This is also for similar reasons of soil disturbance and vegetation consumption by prairie dogs that make their colonies ideal habitats for plovers (Introduction, paragraph 3).
 
 ## c.
 
 | Model number | Visual obstruction | Distance to prairie dog colony | Model description |
-|-------------|:-----------:|:-----------:|:--------------------:|
+|----------------|:--------------:|:--------------:|:----------------------:|
 | 0 |  |  | no predictors (null model) |
 | 1 | X | X | all predictors (saturated model) |
 | 2 | X |  | Visual obstruction |
@@ -156,42 +158,98 @@ Distance to prairie dog colony edge is a continuous variable as it is a measurem
 mopl_clean <- mopl |> # create new clean dataframe for mopl
   clean_names() |> # clean column names to lowercase and underscores
   mutate(used_bin = recode_values(id, # create new column called used_bin to create 1s and 0s from id column
-    "used" ~ "1", # when row says "used", use value "1"
-    "available" ~ "0")) |> # when row says "available", use value "0"
+    "used" ~ 1, # when row says "used", use value "1"
+    "available" ~ 0)) |> # when row says "available", use value "0"
   select(used_bin, edgedist, vo_nest) # select to display specific columns
 ```
 
 ```{r}
 #| label: model fitting
 # model 0: null model
-model0 <- lm(used_bin ~ 1,
-             data = mopl_clean)
+model0 <- glm(used_bin ~ 1, # GLM with no predictors and only response
+              data = mopl_clean, # use mopl_clean data
+              family = "binomial") # binomial error distribution
 
 # model 1: saturated model
-model1 <- lm(used_bin ~ vo_nest + edgedist,
-             data = mopl_clean)
+model1 <- glm(used_bin ~ vo_nest + edgedist, # GLM with predictors visual obstruction and distance from colony
+             data = mopl_clean, # use mopl_clean data
+             family = "binomial") # binomial error distributio
 
 # model 2: visual obstruction
-model2 <- lm(used_bin ~ vo_nest,
-             data = mopl_clean)
+model2 <- glm(used_bin ~ vo_nest, # GLM with predictor visual obstruction
+             data = mopl_clean, # use mopl_clean data
+             family = "binomial") # binomial error distributio
+
 # model 3: distance to prairie dog colony
-model3 <- lm(used_bin ~ edgedist,
-             data = mopl_clean)
+model3 <- glm(used_bin ~ edgedist, # GLM with predictor distance from colony
+             data = mopl_clean, # use mopl_clean data
+             family = "binomial") # binomial error distributio
 ```
 
 ## e.
 
 ```{r}
 #| label: AIC model selection
-AICc(
+AICc( # calculate AIC for each model
   model0,
   model1,
   model2,
   model3) |> 
-  arrange(AICc)
+  arrange(AICc) # by decreasing AIC
 ```
 
 The best model as determined by Akaike's Information Criterion (AIC) is the one including the response of nest use (with the used_bin column) and visual obstruction as a predictor.
+
+## f.
+
+```{r}
+#| label: check model diagnostics
+plot(simulateResiduals(model2)) # plot residuals using function from DHARMa for model2
+```
+
+## g.
+
+```{r}
+#| label: visualize model predictions
+mod_preds <- ggpredict(model2, # create object for model2 predictions
+                       terms = "vo_nest [0:19 by = 1]") # generate predictions on specific interval
+
+ggplot(mopl_clean,
+       aes(x = vo_nest,
+           y = used_bin)) +
+  geom_point(size = 3,
+             alpha = 0.4,
+             color = "maroon4") +
+  geom_ribbon(data = mod_preds,
+              aes(x = x,
+                  y = predicted,
+                  ymin = conf.low,
+                  ymax = conf.high),
+              alpha = 0.3,
+              fill = "maroon4") +
+  geom_line(data = mod_preds,
+            aes(x = x,
+                y = predicted),
+            linewidth = 2,
+            color = "maroon4") +
+  theme_classic() +
+  scale_y_continuous(limits = c(0, 1),
+                     breaks = c(0, 1)) +
+  labs(x = "Visual obstruction",
+       y = "Probability of nest use",
+       title = "Predictions of visual obstruction impact on probability of Mountain Plover nest use")
+```
+
+## h.
+
+**Figure 3. Predictions of visual obstruction impact on probability of Mountain Plover nest use.** Points represent observations of visual obstruction at nest and non-nest sites. Semi-transparent ribbon strip represents 95% confidence interval. Line represents model predictions. Data originally from: Duchardt, Courtney; Beck, Jeffrey; Augustine, David (2020). Data from: Mountain Plover habitat selection and nest survival in relation to weather variability and spatial attributes of Black-tailed Prairie Dog disturbance \[Dataset\]. Dryad. https://doi.org/10.5061/dryad.ttdz08kt7
+
+## i.
+
+```{r}
+ggpredict(model2, # make prediction from object model2
+          terms = "vo_nest [0]" ) # predict nest probabolity at visual obstruction 0
+```
 
 # Problem 4.
 
