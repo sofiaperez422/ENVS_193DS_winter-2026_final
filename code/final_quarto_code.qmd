@@ -18,6 +18,8 @@ library(here) # file organization
 library(janitor) # cleaning data frames
 library(readxl) # reading excel files
 library(showtext) # to show custom text font on plots
+library(MuMIn) # model selection
+
 font_add_google(name = "Montserrat", # name of font on Google font website
               family = "mont") # name to call in font as
 showtext_auto()
@@ -55,6 +57,8 @@ An additional variable that could influence the flooded area of a wetland is the
 ## a.
 
 ```{r}
+#| label: data cleaning kelp
+#| warning: false
 kelp_clean <- kelp |> # create new clean dataframe titled kelp_clean from kelp
   
 # function 3
@@ -86,12 +90,13 @@ summarize(mean_fronds = mean(fronds)) |>  # calculate mean of fronds
 
 # function 4
 ungroup() # remove grouping
+
+str(kelp_clean) # display the structure in a compact format
 ```
 
 ```{r}
 slice_sample(kelp_clean, # display 5 random rows from the sample
-             n = 5) |> 
-  str() # display the structure in a compact format
+             n = 5)
 ```
 
 ## b.
@@ -101,30 +106,92 @@ In the notes of the data set for that row it states "missing datasheet", and the
 ## c.
 
 ```{r}
-ggplot(data = kelp_clean,
-       aes(x = year,
-           y = mean_fronds,
-           color = site_name)) +
-  geom_line(linewidth = 0.8) +
-  geom_point() +
+#| label: kelp visualization
+ggplot(data = kelp_clean, # use kelp_clean data
+       aes(x = year, # set x-axis
+           y = mean_fronds, # set y-axis
+           color = site_name)) + # group by site
+  geom_line(linewidth = 0.8) + # plot lines and adjust thickness
+  geom_point() + # plot points
   scale_color_manual(values = c("Isla Vista" = "bisque3", # change colors
                                 "Naples" = "turquoise4", 
-                                "Carpinteria" = "azure4")) +
-  theme_minimal(base_family = "mont") +
-  labs(x = "Year",
-       y = "Mean kelp fronds per year",
-       title = "Sites vary in mean kelp fronds per year",
-       color = "Site") +
-  theme(plot.title = element_text(hjust = 0.5))
+                                "Carpinteria" = "azure4")) + 
+  theme_minimal(base_family = "mont") + # change theme and font
+  labs(x = "Year", # label x-axis
+       y = "Mean kelp fronds per year", # label y-axis
+       title = "Sites vary in mean kelp fronds per year", # add plot title
+       color = "Site") + # edit legend title
+  theme(plot.title = element_text(hjust = 0.5)) # adjust title to center
 ```
 
-## d. 
+## d.
 
 The site with the most variable mean kelp fronds per year is Isla Vista, as it has the highest points compared to its lowest points seen with the longest lines. The site with the least variable mean kelp fronds per year is Carpinteria, as it has the least peaking relative to the rest of its data points with shorter lines and is also the most consistent in the y-axis region that the points stay in.
 
 # Problem 3.
 
 ## a.
+
+The 1s and 0s represent the Mountain Plover nest use, 1 meaning presence of nest use and 0 meaning no nest use.
+
+## b.
+
+Visual obstruction is a continuous variable that is metric incorporating both vegetation height and density, which are values that are measured with metric units. As visual obstruction increases the probability of Mountain Plover nest site use would decrease, and this is due to activity of black-tailed prairie dog colonies clipping vegetation to maintain visibility for predators, which makes for ideal nesting habitat for the plover, meaning that if there exists more visual obstruction by vegetation, then it would not be as suitable for the plovers to nest (Introduction, paragraph 3).
+
+Distance to prairie dog colony edge is a continuous variable as it is a measurement value in metric units. As distance to prairie dog colony edge increases, the probability of Mountain Plover nest site use would decrease. This is also for similar reasons of soil disturbance and vegetation consumption by prairie dogs that make their colonies ideal habitats for plovers (Introduction, paragraph 3).
+
+## c.
+
+| Model number | Visual obstruction | Distance to prairie dog colony | Model description |
+|-------------|:-----------:|:-----------:|:--------------------:|
+| 0 |  |  | no predictors (null model) |
+| 1 | X | X | all predictors (saturated model) |
+| 2 | X |  | Visual obstruction |
+| 3 |  | X | Distance to prairie dog colony |
+
+## d.
+
+```{r}
+#| label: data cleaning mopl
+mopl_clean <- mopl |> # create new clean dataframe for mopl
+  clean_names() |> # clean column names to lowercase and underscores
+  mutate(used_bin = recode_values(id, # create new column called used_bin to create 1s and 0s from id column
+    "used" ~ "1", # when row says "used", use value "1"
+    "available" ~ "0")) |> # when row says "available", use value "0"
+  select(used_bin, edgedist, vo_nest) # select to display specific columns
+```
+
+```{r}
+#| label: model fitting
+# model 0: null model
+model0 <- lm(used_bin ~ 1,
+             data = mopl_clean)
+
+# model 1: saturated model
+model1 <- lm(used_bin ~ vo_nest + edgedist,
+             data = mopl_clean)
+
+# model 2: visual obstruction
+model2 <- lm(used_bin ~ vo_nest,
+             data = mopl_clean)
+# model 3: distance to prairie dog colony
+model3 <- lm(used_bin ~ edgedist,
+             data = mopl_clean)
+```
+
+## e.
+
+```{r}
+#| label: AIC model selection
+AICc(
+  model0,
+  model1,
+  model2,
+  model3) |> 
+  arrange(AICc)
+```
+
+The best model as determined by Akaike's Information Criterion (AIC) is the one including the response of nest use (with the used_bin column) and visual obstruction as a predictor.
 
 # Problem 4.
 
