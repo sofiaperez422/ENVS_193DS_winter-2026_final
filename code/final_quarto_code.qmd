@@ -17,13 +17,17 @@ library(tidyverse) # general use
 library(here) # file organization
 library(janitor) # cleaning data frames
 library(readxl) # reading excel files
+library(showtext) # to show custom text font on plots
+font_add_google(name = "Montserrat", # name of font on Google font website
+              family = "mont") # name to call in font as
+showtext_auto()
 
 kelp <- read_csv(here("data",
-                      "Annual_Kelp_All_Years_20250903.csv")) # save annual-kelp data as kelp
+                      "Annual_Kelp_All_Years_20250903.csv")) # save annual-kelp data as object  kelp
 mopl <- read_csv(here("data",
-                      "MOPL_nest-site_selection_Duchardt_et_al._2019.csv")) # save MOPL-nest data as MOPL
-personal_data <- read_csv(here("data",
-                      "Personal_Data20260315.csv"))
+                      "MOPL_nest-site_selection_Duchardt_et_al._2019.csv")) # save MOPL-nest data as object MOPL
+personal_data <- read_csv(here("data", 
+                      "Personal_Data20260315.csv")) # save personal data as object
 ```
 
 # Problem 1.
@@ -44,7 +48,7 @@ Part 2 – We found no difference ($\eta^2$ = effect size) in median flooded wet
 
 ## d.
 
-An additional variable that could influence the flooded area of a wetland is the daily Delta outflow, specifically applied as a median daily, which would be a continous variable. This might influence measured wetland flooding area because it directly involves the activity of water managers intentionally moving water on and off flooded wetland units for reasons like leaching salts from soils and providing wetland habitat for breeding waterfowl around that time of year, which has potential to influence the overall area.
+An additional variable that could influence the flooded area of a wetland is the daily Delta outflow, specifically applied as a median daily, which would be a continuous variable. This might influence measured wetland flooding area because it directly involves the activity of water managers intentionally moving water on and off flooded wetland units for reasons like leaching salts from soils and providing wetland habitat for breeding waterfowl around that time of year, which has potential to influence the overall area.
 
 # Problem 2.
 
@@ -89,6 +93,34 @@ slice_sample(kelp_clean, # display 5 random rows from the sample
              n = 5) |> 
   str() # display the structure in a compact format
 ```
+
+## b.
+
+In the notes of the data set for that row it states "missing datasheet", and the number for the value of fronds in that "quad" in that "transect" is -99999. This value represents an "NA" value used when the data is either lost or not collected for a particular species (Methods and Protocols tab of the data page.)
+
+## c.
+
+```{r}
+ggplot(data = kelp_clean,
+       aes(x = year,
+           y = mean_fronds,
+           color = site_name)) +
+  geom_line(linewidth = 0.8) +
+  geom_point() +
+  scale_color_manual(values = c("Isla Vista" = "bisque3", # change colors
+                                "Naples" = "turquoise4", 
+                                "Carpinteria" = "azure4")) +
+  theme_minimal(base_family = "mont") +
+  labs(x = "Year",
+       y = "Mean kelp fronds per year",
+       title = "Sites vary in mean kelp fronds per year",
+       color = "Site") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+## d. 
+
+The site with the most variable mean kelp fronds per year is Isla Vista, as it has the highest points compared to its lowest points seen with the longest lines. The site with the least variable mean kelp fronds per year is Carpinteria, as it has the least peaking relative to the rest of its data points with shorter lines and is also the most consistent in the y-axis region that the points stay in.
 
 # Problem 3.
 
