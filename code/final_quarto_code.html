@@ -9,7 +9,7 @@
 <meta name="author" content="Sofia Perez">
 <meta name="dcterms.date" content="2026-03-16">
 
-<title>final_code</title>
+<title>Final code</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -161,7 +161,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">final_code</h1>
+<h1 class="title">Final code</h1>
 </div>
 
 
@@ -190,7 +190,6 @@ window.Quarto = {
 </header>
 
 
-<p>github link:https://github.com/sofiaperez422/ENVS_193DS_winter-2026_final</p>
 <section id="set-up" class="level2">
 <h2 class="anchored" data-anchor-id="set-up">set up</h2>
 <div class="cell">
@@ -290,11 +289,11 @@ window.Quarto = {
 <pre><code># A tibble: 5 × 3
   site_name    year mean_fronds
   &lt;fct&gt;       &lt;dbl&gt;       &lt;dbl&gt;
-1 Naples       2021       10.5 
-2 Isla Vista   2003        6.14
-3 Carpinteria  2000        7.98
-4 Naples       2022        7.99
-5 Isla Vista   2024       10.3 </code></pre>
+1 Carpinteria  2019        3.37
+2 Carpinteria  2006       10.8 
+3 Naples       2011        5.32
+4 Carpinteria  2004        3.67
+5 Naples       2014        8.76</code></pre>
 </div>
 </div>
 </section>
@@ -539,8 +538,8 @@ vo_nest | Predicted |     95% CI
 <section id="run-analysis" class="level3">
 <h3 class="anchored" data-anchor-id="run-analysis">Run analysis</h3>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(time_with_mobile_game_active_min <span class="sc">~</span> class,</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> personal_data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(time_with_mobile_game_active_min <span class="sc">~</span> class, <span class="co"># run non-parametric test to test medians of game time with or without class</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> personal_data) <span class="co"># use personal data</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Wilcoxon rank sum test with continuity correction
@@ -551,8 +550,8 @@ alternative hypothesis: true location shift is not equal to 0</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cliffs_delta</span>(time_with_mobile_game_active_min <span class="sc">~</span> class,</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> personal_data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cliffs_delta</span>(time_with_mobile_game_active_min <span class="sc">~</span> class, <span class="co"># calculate effect size of class on game time</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">data =</span> personal_data) <span class="co"># use personal data</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>r (rank biserial) |        95% CI
 ---------------------------------
@@ -564,23 +563,22 @@ alternative hypothesis: true location shift is not equal to 0</code></pre>
 <section id="d.-3" class="level2">
 <h2 class="anchored" data-anchor-id="d.-3">d.</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> personal_data,</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> class,</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> time_with_mobile_game_active_min)) <span class="sc">+</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">fill =</span> class),</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">outliers =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">width =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>,</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">height =</span> <span class="dv">0</span>,</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>              <span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Class"</span>, </span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Time with game active (min)"</span>) <span class="sc">+</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"no"</span> <span class="ot">=</span> <span class="st">"bisque4"</span>,</span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"yes"</span> <span class="ot">=</span> <span class="st">"turquoise3"</span></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">+</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">25</span>)) <span class="sc">+</span> <span class="co"># set font size</span></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> personal_data, <span class="co">#create plot with personal data</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> class, <span class="co"># set x-axis</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> time_with_mobile_game_active_min)) <span class="sc">+</span> <span class="co"># set y-axis</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">fill =</span> class), <span class="co"># plot box plot and fill color by class</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">outliers =</span> <span class="cn">FALSE</span>, <span class="co"># don't include outlier points </span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">width =</span> <span class="fl">0.5</span>) <span class="sc">+</span> <span class="co"># adjust box plot width</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="co"># add underlying observations as points and adjust horizontal jitter</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">height =</span> <span class="dv">0</span>, <span class="co"># no vertical jitter</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>              <span class="at">shape =</span> <span class="dv">21</span>) <span class="sc">+</span> <span class="co"># change point shape to hollow circles</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="co"># set plot theme</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Class"</span>,  <span class="co"># label x-axis</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Time with game active (min)"</span>) <span class="sc">+</span> <span class="co"># label y-axis </span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"no"</span> <span class="ot">=</span> <span class="st">"bisque4"</span>, <span class="co"># set colors</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>                               <span class="st">"yes"</span> <span class="ot">=</span> <span class="st">"turquoise3"</span>)) <span class="sc">+</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">25</span>)) <span class="sc">+</span> <span class="co"># set font size</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="co"># remove legend</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">

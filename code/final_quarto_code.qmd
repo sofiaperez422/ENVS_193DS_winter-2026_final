@@ -1,13 +1,11 @@
 ---
-title: "final_code"
+title: "Final code"
 author: "Sofia Perez"
 date: "2026-03-16"
 format: html
 editor: visual
 toc: true # use this to display a table of contents
 ---
-
-github link:https://github.com/sofiaperez422/ENVS_193DS_winter-2026_final
 
 ## set up
 
@@ -287,37 +285,36 @@ Observations from one group are independent from observations from the other –
 ```{r}
 #| label: Mann-Whitney U
 #| warning: false
-wilcox.test(time_with_mobile_game_active_min ~ class,
-            data = personal_data)
+wilcox.test(time_with_mobile_game_active_min ~ class, # run non-parametric test to test medians of game time with or without class
+            data = personal_data) # use personal data
 ```
 
 ```{r}
 #| label: effect size
-cliffs_delta(time_with_mobile_game_active_min ~ class,
-            data = personal_data)
+cliffs_delta(time_with_mobile_game_active_min ~ class, # calculate effect size of class on game time
+            data = personal_data) # use personal data
 ```
 
 ## d.
 
 ```{r}
 #| label: personal data visualization
-ggplot(data = personal_data,
-       aes(x = class,
-           y = time_with_mobile_game_active_min)) +
-  geom_boxplot(aes(fill = class),
-               outliers = FALSE,
-               width = 0.5) +
-  geom_jitter(width = 0.2,
-              height = 0,
-              shape = 21) +
-  theme_minimal() +
-  labs(x = "Class", 
-       y = "Time with game active (min)") +
-  scale_fill_manual(values = c("no" = "bisque4",
-    "yes" = "turquoise3"
-  )) +
+ggplot(data = personal_data, #create plot with personal data
+       aes(x = class, # set x-axis
+           y = time_with_mobile_game_active_min)) + # set y-axis
+  geom_boxplot(aes(fill = class), # plot box plot and fill color by class
+               outliers = FALSE, # don't include outlier points 
+               width = 0.5) + # adjust box plot width
+  geom_jitter(width = 0.2, # add underlying observations as points and adjust horizontal jitter
+              height = 0, # no vertical jitter
+              shape = 21) + # change point shape to hollow circles
+  theme_minimal() + # set plot theme
+  labs(x = "Class",  # label x-axis
+       y = "Time with game active (min)") + # label y-axis 
+  scale_fill_manual(values = c("no" = "bisque4", # set colors
+                               "yes" = "turquoise3")) +
   theme(text = element_text(size = 25)) + # set font size
-  theme(legend.position = "none")
+  theme(legend.position = "none") # remove legend
 ```
 
 ## e.
