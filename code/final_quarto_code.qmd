@@ -237,7 +237,7 @@ ggplot(mopl_clean, # create plot base with mopl_clean data
             linewidth = 2, # change line width to thicker 
             color = "maroon4") + # change color
   theme_classic() + # change theme
-  theme(text = element_text(size = 30)) + # set font size
+  theme(text = element_text(size = 20)) + # set font size
   scale_y_continuous(limits = c(0, 1), # adjust y-axis parameters and breaks to only show 0 and 1
                      breaks = c(0, 1)) +
   labs(x = "Visual obstruction", # label x-axis
@@ -316,13 +316,14 @@ ggplot(data = personal_data,
   scale_fill_manual(values = c("no" = "bisque4",
     "yes" = "turquoise3"
   )) +
+  theme(text = element_text(size = 25)) + # set font size
   theme(legend.position = "none")
 ```
 
 ## e.
 
-\*\*Figure
+**Figure 4. Time with game active (min).** Individual points represent observations of tracked game screen time on a day with or without class. Boxes represent interquartile range and the center line of boxes represent median value. Line connected to boxes represents outer quartiles of data.
 
 ## f.
 
-## g.
+I found no difference (Cliff's $\delta$ = -0.05) in median time with mobile game active between days with class (n = 22) and days without class (n = 12) (Kruskal-Wallis test, W = 125, p = 0.8127, $\alpha$ = 0.05). The time I spent on my mobile game was minusculey larger on days with class (median = 10.5 min) than days without class (median = 10 min).
